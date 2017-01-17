@@ -1,16 +1,15 @@
-
 from __future__ import unicode_literals
 
 from django.shortcuts import redirect, render_to_response
 from django.contrib import messages
 from django.contrib.admin import site
 from django.template import RequestContext
-from django.core.cache import get_cache
+from django.core.cache import caches
 from django.conf import settings
 from django.utils.translation import ugettext as _
 
-if get_cache.__module__.startswith('debug_toolbar'):
-    from debug_toolbar.panels.cache import base_get_cache as get_cache
+if caches.__module__.startswith('debug_toolbar'):
+    from debug_toolbar.panels.cache import base_get_cache as caches
 
 SETTINGS = {
     'REFRESH_RATE': 5000,
@@ -19,7 +18,7 @@ SETTINGS = {
 if hasattr(settings, 'MEMCACHE_ADMIN'):
     SETTINGS = dict(SETTINGS.items() + settings.MEMCACHE_ADMIN.items())
 
-mc_client = get_cache(SETTINGS['CACHE'])._cache
+mc_client = caches[SETTINGS['CACHE']]._cache
 
 
 def _percent(data, part, total):
